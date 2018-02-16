@@ -9,8 +9,8 @@ class BookItem extends Component {
       <div className="book">
         <div className="book-top">
           <div className="book-cover" style={{ backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
-          <div className="book-shelf-changer">
-            {!isDisabled && (
+          {!isDisabled && (
+            <div className="book-shelf-changer">
               <select value={book.shelf} onChange={(e) => this.props.updateData(book, e.target.value)}>
                 <option value="none" disabled>Move to...</option>
                 {
@@ -22,9 +22,9 @@ class BookItem extends Component {
                 }
                 <option value="none" >None</option>
               </select>
-            )}
 
-          </div>
+            </div>
+          )}
         </div>
         <div className="book-title">{book.title}</div>
         <div className="book-authors">
