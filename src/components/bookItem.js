@@ -25,8 +25,18 @@ class BookItem extends Component {
 
             </div>
           )}
+
         </div>
-        <div className="book-title">{book.title}</div>
+        <div className="book-title">
+       
+        {isDisabled && (
+            <div className="book-shelved">
+                <h2>Shelved on: {book.shelf}</h2>
+
+            </div>
+          )}
+        </div>
+        {book.title}
         <div className="book-authors">
           {
             book.authors && book.authors.map((author, index) =>
