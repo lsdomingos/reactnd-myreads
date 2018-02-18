@@ -8,11 +8,11 @@ class BookItem extends Component {
     return (
       <div className="book">
         <div className="book-top">
-          <div className="book-cover" style={{ backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
+          <div className="book-cover" style={{ backgroundImage: `url(${book.imageLinks ? book.imageLinks.smallThumbnail : ''})` }}></div>
           {!isDisabled && (
             <div className="book-shelf-changer">
               <select value={book.shelf} onChange={(e) => this.props.updateData(book, e.target.value)}>
-                <option value="none" disabled>Move to...</option>
+                <option value="none" selected disabled>Move to...</option>
                 {
                   Object.keys(shelves).map((shelf, index) => (
                     <option key={shelf + index} value={shelf} defaultValue={shelf === book.shelf}>
@@ -31,7 +31,7 @@ class BookItem extends Component {
        
         {isDisabled && (
             <div className="book-shelved">
-                <h2>Shelved on: {book.shelf}</h2>
+                <h3>Shelved on: {shelves[book.shelf]}</h3>
 
             </div>
           )}
