@@ -6,6 +6,8 @@ import BookItem from '../components/bookItem';
 import * as BooksAPI from '../BooksAPI';
 
 class Search extends Component {
+  timer = null
+  timer2 = null
 
   state = {
     query: '',
@@ -15,6 +17,9 @@ class Search extends Component {
   constructor() {
     super();
   }
+  componentWillReceiveProps() {
+    this.getBooks(this.state.query)
+  }
 
   updateQuery = (query) => {
     this.setState({ query: query.toLowerCase() })
@@ -22,41 +27,48 @@ class Search extends Component {
   }
 
   getBooks(query) {
-    let timer = null;
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    clearTimeout(this.timer);
+    clearTimeout(this.timer2);
+    this.timer = setTimeout(() => {
       let books = this.props.bookList;
-      if (query === '' || !query) {
-        this.setState({
-          searchResults: []
-        })
-        return
-      }
       BooksAPI.search(query).then(
         res => {
           if (res) {
-            const bookList = res.error ? [] : res.map(book => {
+            const bookList = res.error ? [] : res.filter(book => {
+
               books.map(item => {
                 if (item.id !== book.id) {
                   return book;
-                }else{
+                } else {
                   book.shelf = item.shelf;
                   book.isDisabled = true;
                   return book;
                 }
               })
-              return book;
+              if (book && book.authors && book.hasOwnProperty('imageLinks') && book.imageLinks.smallThumbnail) {
+                return book
+              } else {
+                return false
+              }
             });
-  
+
             this.setState({
               searchResults: bookList
             })
           }
         }
       )
-      this.render()
     }, 300);
- 
+
+    this.timer2 = setTimeout(() => {
+      if (query === '' || !query) {
+        this.setState({
+          searchResults: []
+        })
+        return false
+      }
+    }, 400)
+
   }
 
   render() {
@@ -73,7 +85,7 @@ class Search extends Component {
         <div className="search-books-bar">
           <Link to="/" onClick={() => { window.history }} className='close-search'> back </Link>
           <div className="search-books-input-wrapper">
-            <input type="text" placeholder="Search by title or author"
+            <input type="text" placeholder="Search by term"
               value={query}
               onChange={(e) => this.updateQuery(e.target.value)}
             />
@@ -107,7 +119,7 @@ class Search extends Component {
                     {
                       searchResults.map((book) => (
                         <li key={book.id}>
-                          <BookItem key={book.id} book={book} shelves={bookShelfCategories} updateData={this.props.updateData} isDisabled={book.isDisabled}/>
+                          <BookItem key={book.id} book={book} shelves={bookShelfCategories} updateData={this.props.updateData} isDisabled={book.isDisabled} />
                         </li>
                       ))
                     }

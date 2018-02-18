@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
-import sortBy from 'sort-by'
+import { Route } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 
 import './App.css'
@@ -16,31 +15,22 @@ class BooksApp extends Component {
     bookList: []
   }
   componentDidMount() {
-    
-    BooksAPI.getAll().then(
-      books => {
-        this.setState({ bookList: books })
-      }
-    )
+
+    this.getallBooks()
   }
   updateData = (book, shelf) => {
     console.log(book, shelf)
-    let books = this.state.bookList;
     BooksAPI.update(book, shelf).then(
       res => {
-        let updatedBookList
-        updatedBookList = books.filter((item, index) => {
-          if (item.id === book.id) {
-            if (shelf !== 'none') {
-              item.shelf = shelf
-            } else {
-              item = false
-            }
-          }
-          return item;
-        })
-        updatedBookList.sort(sortBy('title'));
-        this.setState({ bookList: updatedBookList });
+        this.getallBooks()
+      }
+    )
+  }
+
+  getallBooks() {
+    BooksAPI.getAll().then(
+      books => {
+        this.setState({ bookList: books })
       }
     )
   }
@@ -53,11 +43,11 @@ class BooksApp extends Component {
           </div>
 
           <Route exact path='/' render={() => (
-            <Home bookList={this.state.bookList} updateData={this.updateData} bookShelfCategories={this.bookShelfCategories}/>
+            <Home bookList={this.state.bookList} updateData={this.updateData} bookShelfCategories={this.bookShelfCategories} />
           )} />
 
           <Route exact path='/search' render={() => (
-            <Search bookList={this.state.bookList} updateData={this.updateData} bookShelfCategories={this.bookShelfCategories}/>
+            <Search bookList={this.state.bookList} updateData={this.updateData} bookShelfCategories={this.bookShelfCategories} />
           )} />
 
         </div>
