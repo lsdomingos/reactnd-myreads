@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import escapeRegExp from 'escape-string-regexp';
+import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by';
 import BookItem from '../components/bookItem';
 import * as BooksAPI from '../BooksAPI';
@@ -14,15 +14,15 @@ class Search extends Component {
     searchResults: []
   }
 
-  constructor() {
-    super();
+  componentWillReceiveProps() {
+    this.getBooks(this.state.query)
   }
   componentWillReceiveProps() {
     this.getBooks(this.state.query)
   }
 
   updateQuery = (query) => {
-    this.setState({ query: query.toLowerCase() })
+    this.setState({ query: query })
     this.getBooks(query)
   }
 
@@ -31,11 +31,11 @@ class Search extends Component {
     clearTimeout(this.timer2);
     this.timer = setTimeout(() => {
       let books = this.props.bookList;
+      query = query.toLowerCase().trim()
       BooksAPI.search(query).then(
         res => {
           if (res) {
             const bookList = res.error ? [] : res.filter(book => {
-
               books.map(item => {
                 if (item.id !== book.id) {
                   return book;
@@ -46,7 +46,8 @@ class Search extends Component {
                 }
               })
               if (book && book.authors && book.hasOwnProperty('imageLinks') && book.imageLinks.smallThumbnail) {
-                return book
+                const match = new RegExp(escapeRegExp(query), 'i')
+                return  match.test(book.authors) || match.test(book.title) ? book : false
               } else {
                 return false
               }
@@ -73,7 +74,7 @@ class Search extends Component {
 
   render() {
 
-    const { bookList, bookShelfCategories } = this.props;
+    const { bookShelfCategories } = this.props;
     const { query, searchResults } = this.state;
 
     if (searchResults && searchResults.length > 0) {
