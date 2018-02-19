@@ -2,6 +2,11 @@ import React, { Component } from 'react'
 
 class BookItem extends Component {
 
+  componentDidMount() {
+
+    document.getElementById('shelfOption').selectedIndex = -1;
+  }
+
   render() {
     const { book, shelves, isDisabled } = this.props;
 
@@ -11,8 +16,8 @@ class BookItem extends Component {
           <div className="book-cover" style={{ backgroundImage: `url(${book.imageLinks ? book.imageLinks.smallThumbnail : ''})` }}></div>
           {!isDisabled && (
             <div className="book-shelf-changer">
-              <select value={book.shelf} onChange={(e) => this.props.updateData(book, e.target.value)}>
-                <option value="none" selected disabled>Move to...</option>
+              <select id="shelfOption" value={book.shelf} onChange={(e) => this.props.updateData(book, e.target.value)}>
+                <option value="" disabled>Move to...</option>
                 {
                   Object.keys(shelves).map((shelf, index) => (
                     <option key={shelf + index} value={shelf} defaultValue={shelf === book.shelf}>
@@ -28,10 +33,10 @@ class BookItem extends Component {
 
         </div>
         <div className="book-title">
-       
-        {isDisabled && (
+
+          {isDisabled && (
             <div className="book-shelved">
-                <h3>Shelved on: {shelves[book.shelf]}</h3>
+              <h3>Shelved on: {shelves[book.shelf]}</h3>
 
             </div>
           )}
