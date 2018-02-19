@@ -29,33 +29,35 @@ class Search extends Component {
     this.timer = setTimeout(() => {
       let books = this.props.bookList;
       query = query.toLowerCase().trim()
-      BooksAPI.search(query).then(
-        res => {
-          if (res) {
-            const bookList = res.error ? [] : res.filter(book => {
-              books.map(item => {
-                if (item.id !== book.id) {
-                  return book;
+      if (query) {
+        BooksAPI.search(query).then(
+          res => {
+            if (res) {
+              const bookList = res.error ? [] : res.filter(book => {
+                books.map(item => {
+                  if (item.id !== book.id) {
+                    return book;
+                  } else {
+                    book.shelf = item.shelf;
+                    book.isDisabled = true;
+                    return book;
+                  }
+                })
+                if (book && book.authors && book.hasOwnProperty('imageLinks') && book.imageLinks.smallThumbnail) {
+                  const match = new RegExp(escapeRegExp(query), 'i')
+                  return match.test(book.authors) || match.test(book.title) ? book : false
                 } else {
-                  book.shelf = item.shelf;
-                  book.isDisabled = true;
-                  return book;
+                  return false
                 }
-              })
-              if (book && book.authors && book.hasOwnProperty('imageLinks') && book.imageLinks.smallThumbnail) {
-                const match = new RegExp(escapeRegExp(query), 'i')
-                return  match.test(book.authors) || match.test(book.title) ? book : false
-              } else {
-                return false
-              }
-            });
+              });
 
-            this.setState({
-              searchResults: bookList
-            })
+              this.setState({
+                searchResults: bookList
+              })
+            }
           }
-        }
-      )
+        )
+      }
     }, 300);
 
     this.timer2 = setTimeout(() => {
